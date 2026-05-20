@@ -1,47 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitso's Repair Shop</title>
-  </head>
-  <body>
-    <header>
-      <div id="maincontainer">
-        <h1>Kitso's Repair Shop</h1>
-        <div id="navbar">
-          <a href="#">Home</a>
-          <a href="#">Services</a>
-          <a href="#">Contact Us</a>
-        </div>
+    <title>Kitso's Phone Repair Shop</title>
+    <style>
+      :root {
+        --bg-1: #050c18;
+        --bg-2: #0a2040;
+        --glass: rgba(255, 255, 255, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.25);
+        --txt-main: #eaf4ff;
+        --txt-soft: #b7cde8;
+        --accent: #44f1ff;
+        --accent-2: #6d8dff;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        color: var(--txt-main);
+        background:
+          linear-gradient(rgba(5, 12, 24, 0.74), rgba(10, 32, 64, 0.8)),
+          url("https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1600&q=80"),
+          radial-gradient(circle at 15% 10%, #294f96 0%, transparent 30%),
+          radial-gradient(circle at 85% 20%, #452f8f 0%, transparent 32%),
+          linear-gradient(145deg, var(--bg-1), var(--bg-2));
+        background-size: cover, cover, auto, auto, auto;
+        background-position: center, center, center, center, center;
+        background-attachment: fixed;
+      }
+
+      .container { width: min(1080px, 92%); margin: 0 auto; }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        backdrop-filter: blur(9px);
+        background: rgba(2, 10, 22, 0.7);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .header-wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 0;
+      }
+
+      .site-title {
+        margin: 0;
+        font-size: clamp(21px, 3vw, 31px);
+      }
+
+      .navbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .navbar a {
+        color: var(--txt-main);
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 14px;
+        border: 1px solid var(--glass-border);
+        background: var(--glass);
+      }
+
+      .navbar a:hover {
+        background: linear-gradient(120deg, var(--accent-2), #3fcbff);
+        border-color: transparent;
+      }
+
+      main { padding: 34px 0 28px; }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+
+      .glass-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        backdrop-filter: blur(6px);
+      }
+
+      .hero-main { padding: 24px; }
+
+      .pill {
+        display: inline-block;
+        background: rgba(68, 241, 255, 0.16);
+        color: var(--accent);
+        border: 1px solid rgba(68, 241, 255, 0.5);
+        padding: 6px 11px;
+        border-radius: 999px;
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .hero-main h1 {
+        margin: 12px 0 10px;
+        font-size: clamp(30px, 5vw, 48px);
+        line-height: 1.1;
+      }
+
+      .hero-main h3 { margin: 0 0 10px; color: #d8e8ff; }
+      .hero-main p { color: var(--txt-soft); line-height: 1.6; }
+
+      .actions {
+        margin-top: 18px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        text-decoration: none;
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-weight: 700;
+      }
+
+      .btn-primary { background: linear-gradient(120deg, #1fd6db, #2f8cff); }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+      }
+
+      .hero-side {
+        padding: 16px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .mini {
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(0, 10, 25, 0.3);
+      }
+
+      .mini strong { display: block; font-size: 20px; }
+      .mini span { color: var(--txt-soft); font-size: 14px; }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 14px;
+      }
+
+      .section-card { padding: 18px; }
+      .section-card h2 { margin-top: 0; }
+      .section-card p, .section-card li { color: var(--txt-soft); }
+      ul { margin: 0; padding-left: 18px; }
+
+      .site-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 20px 0 28px;
+      }
+
+      .footer-wrap {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      #socialmedia a { color: #8ef7ff; text-decoration: none; margin-right: 10px; }
+
+      @media (max-width: 850px) { .hero { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+      <div class="container header-wrap" id="maincontainer">
+        <h1 class="site-title">Kitso's Repair Shop</h1>
+        <nav class="navbar" id="navbar">
+          <a href="index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="about.html">About Us</a>
+          <a href="contact.html">Contact Us</a>
+        </nav>
       </div>
     </header>
-    <section>
-      <div>
-        <h1>HOME</h1>
-        <h2>Welcome to the best phone repair shop in the world.We offer services such battery replacement, screen replacement and camera replacements.</h2>
-      </div>
-    </section>
-    <section>
-      <div>
-        <h2>We repair the following phones:</h2>
-        <ul>
-          <li>Iphone</li>
-          <li>Samsung</li>
-          <li>Huawei</li>
-          <li>Techno</li>
-          <li>Google</li>
-        </ul>
-      </div>
-    </section>
-  <div>
-    <footer>
-      <p>Copyright Personal Profile @2026</p>
-      <div id="socialmedia">
-        <span><a href="we.whatsapp.com">Whatsapp</a></span>
-        <span><a href="Facebook">Facebook</a></span>
+
+    <main class="container">
+      <section class="hero">
+        <article class="glass-card hero-main">
+          <span class="pill">Professional Repair Hub</span>
+          <h1>HOME</h1>
+          <h3>Welcome to Kitso's Phone Repair Shop</h3>
+          <p>
+            We provide fast, reliable, and affordable mobile device repairs. From cracked
+            screens to weak batteries, our technicians are ready to get your phone working
+            like new again.
+          </p>
+          <p>
+            Same-day service is available for most common repairs, and every repair is
+            tested before collection to ensure quality.
+          </p>
+          <div class="actions">
+            <a class="btn btn-primary" href="services.html">Book Repair</a>
+            <a class="btn btn-secondary" href="contact.html">Get Assistance</a>
+          </div>
+        </article>
+
+        <aside class="glass-card hero-side">
+          <div class="mini">
+            <strong>Same-Day</strong>
+            <span>Quick service for common repairs.</span>
+          </div>
+          <div class="mini">
+            <strong>6 Major Brands</strong>
+            <span>From iPhone to Xiaomi.</span>
+          </div>
+          <div class="mini">
+            <strong>Trusted Quality</strong>
+            <span>Every repaired phone is tested.</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="grid">
+        <article class="glass-card section-card">
+          <h2>Our Services</h2>
+          <ul>
+            <li>Screen replacement (cracked or unresponsive displays)</li>
+            <li>Battery replacement (fast-draining or swollen batteries)</li>
+            <li>Camera repair (front and back camera issues)</li>
+            <li>Charging port repair</li>
+            <li>Speaker and microphone repair</li>
+            <li>Software troubleshooting and updates</li>
+          </ul>
+        </article>
+
+        <article class="glass-card section-card">
+          <h2>Brands We Repair</h2>
+          <ul>
+            <li>iPhone</li>
+            <li>Samsung</li>
+            <li>Huawei</li>
+            <li>Tecno</li>
+            <li>Google Pixel</li>
+            <li>Xiaomi</li>
+          </ul>
+        </article>
+
+        <article class="glass-card section-card">
+          <h2>Why Customers Choose Us</h2>
+          <ul>
+            <li>Experienced technicians</li>
+            <li>High-quality replacement parts</li>
+            <li>Quick turnaround times</li>
+            <li>Friendly customer support</li>
+            <li>Fair and transparent pricing</li>
+          </ul>
+        </article>
+
+        <article class="glass-card section-card">
+          <h2>Business Hours</h2>
+          <p>Monday - Friday: 8:00 AM - 6:00 PM</p>
+          <p>Saturday: 9:00 AM - 4:00 PM</p>
+          <p>Sunday: Closed</p>
+        </article>
+
+        <article class="glass-card section-card">
+          <h2>Contact Us</h2>
+          <p>Phone: +267 71 234 567</p>
+          <p>Email: kitsorepairshop@example.com</p>
+          <p>Location: Gaborone, Botswana</p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-wrap">
+        <p>Copyright Kitso's Phone Repair Shop @2026</p>
+        <div id="socialmedia">
+          <span><a href="https://wa.me/26771234567">WhatsApp</a></span>
+          <span><a href="https://facebook.com">Facebook</a></span>
+        </div>
       </div>
     </footer>
-</div>
-  </body>
+</body>
 </html>

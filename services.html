@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitso's Phone Repair Shop</title>
+    <style>
+      :root {
+        --bg-1: #050c18;
+        --bg-2: #0a2040;
+        --glass: rgba(255, 255, 255, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.25);
+        --txt-main: #eaf4ff;
+        --txt-soft: #b7cde8;
+        --accent: #44f1ff;
+        --accent-2: #6d8dff;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        color: var(--txt-main);
+        background:
+          linear-gradient(rgba(5, 12, 24, 0.74), rgba(10, 32, 64, 0.8)),
+          url("https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1600&q=80"),
+          radial-gradient(circle at 15% 10%, #294f96 0%, transparent 30%),
+          radial-gradient(circle at 85% 20%, #452f8f 0%, transparent 32%),
+          linear-gradient(145deg, var(--bg-1), var(--bg-2));
+        background-size: cover, cover, auto, auto, auto;
+        background-position: center, center, center, center, center;
+        background-attachment: fixed;
+      }
+
+      .container { width: min(1080px, 92%); margin: 0 auto; }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        backdrop-filter: blur(9px);
+        background: rgba(2, 10, 22, 0.7);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .header-wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 0;
+      }
+
+      .site-title {
+        margin: 0;
+        font-size: clamp(21px, 3vw, 31px);
+      }
+
+      .navbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .navbar a {
+        color: var(--txt-main);
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 14px;
+        border: 1px solid var(--glass-border);
+        background: var(--glass);
+      }
+
+      .navbar a:hover {
+        background: linear-gradient(120deg, var(--accent-2), #3fcbff);
+        border-color: transparent;
+      }
+
+      main { padding: 34px 0 40px; }
+
+      main h1 {
+        margin: 0 0 10px;
+      }
+
+      main > p {
+        margin: 0 0 18px;
+        color: var(--txt-soft);
+      }
+
+      .glass-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        backdrop-filter: blur(6px);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+
+      .glass-card h2 {
+        margin-top: 0;
+      }
+
+      .phone-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .phone-card {
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        background: rgba(0, 10, 25, 0.35);
+        padding: 10px;
+        cursor: pointer;
+        text-align: center;
+        color: var(--txt-main);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+      }
+
+      .phone-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent);
+      }
+
+      .phone-picture {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        min-height: 120px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .phone-picture img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .phone-name {
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      form {
+        display: grid;
+        gap: 12px;
+      }
+
+      label {
+        font-weight: 700;
+        margin-bottom: 6px;
+        display: block;
+      }
+
+      input,
+      button {
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid var(--glass-border);
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      input {
+        background: rgba(0, 10, 25, 0.4);
+        color: var(--txt-main);
+      }
+
+      input::placeholder {
+        color: var(--txt-soft);
+      }
+
+      input[readonly] {
+        background: rgba(0, 10, 25, 0.55);
+      }
+
+      button[type="submit"] {
+        background: linear-gradient(120deg, #1fd6db, #2f8cff);
+        color: #fff;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      #result {
+        margin-top: 14px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      .service-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0 14px;
+      }
+
+      .service-buttons button {
+        width: auto;
+        border: 1px solid var(--glass-border);
+        background: rgba(0, 10, 25, 0.35);
+        color: var(--txt-main);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .service-buttons button.active {
+        background: rgba(68, 241, 255, 0.2);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .price-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .price-option {
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        padding: 10px;
+        cursor: pointer;
+        background: rgba(0, 10, 25, 0.35);
+        color: var(--txt-main);
+      }
+
+      .price-option.selected {
+        border-color: var(--accent);
+        background: rgba(68, 241, 255, 0.16);
+      }
+
+      .small {
+        font-size: 12px;
+        color: var(--txt-soft);
+      }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+      <div class="container header-wrap" id="maincontainer">
+        <h1 class="site-title">Kitso's Repair Shop</h1>
+        <nav class="navbar" id="navbar">
+          <a href="index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="about.html">About Us</a>
+          <a href="contact.html">Contact Us</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <h1>Services Booking</h1>
+      <p>Click a phone picture, then choose service and one of three prices below.</p>
+
+      <section class="glass-card">
+        <section class="phone-grid" id="phoneGrid"></section>
+      </section>
+
+      <section class="glass-card inline-selection">
+        <h2 id="selectionTitle">Select a phone to continue</h2>
+        <p class="small">Your service and price choices appear right here.</p>
+        <div id="serviceButtons" class="service-buttons"></div>
+        <div id="priceList" class="price-list"></div>
+      </section>
+
+      <form id="serviceForm" class="glass-card">
+        <div>
+          <label for="phone">Selected Phone</label>
+          <input id="phone" readonly required placeholder="Click a phone picture above">
+        </div>
+
+        <div>
+          <label for="service">Service Needed</label>
+          <input id="service" readonly required placeholder="Select service above">
+        </div>
+
+        <div>
+          <label for="priceTier">Selected Price Option</label>
+          <input id="priceTier" readonly required placeholder="Select price above">
+        </div>
+
+        <div>
+          <label for="customerName">Your Name</label>
+          <input id="customerName" type="text" placeholder="Enter your name" required>
+        </div>
+
+        <button type="submit">Submit Request</button>
+      </form>
+
+      <div id="result"></div>
+    </main>
+
+    <script>
+      const phoneData = {
+        "iPhone": {
+          factor: 1.25,
+          image: "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-15-pro-max-1.jpg"
+        },
+        "Samsung": {
+          factor: 1.15,
+          image: "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s24-ultra-5g-sm-s928-0.jpg"
+        },
+        "Huawei": {
+          factor: 1.1,
+          image: "https://fdn2.gsmarena.com/vv/pics/huawei/huawei-p60-pro-0.jpg"
+        },
+        "Tecno": {
+          factor: 1.0,
+          image: "https://fdn2.gsmarena.com/vv/pics/tecno/tecno-phantom-v-fold-0.jpg"
+        },
+        "Google Pixel": {
+          factor: 1.2,
+          image: "https://fdn2.gsmarena.com/vv/pics/google/google-pixel-8-pro-0.jpg"
+        },
+        "Xiaomi": {
+          factor: 1.05,
+          image: "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-14-ultra-1.jpg"
+        }
+      };
+
+      const serviceBase = {
+        "Screen Replacement": 450,
+        "Battery Replacement": 320,
+        "Charging Port Repair": 280,
+        "Software Fix": 220
+      };
+
+      const tierFactors = {
+        "Budget": 1,
+        "Standard": 1.25,
+        "Premium": 1.5
+      };
+
+      const phoneGrid = document.getElementById("phoneGrid");
+      const phoneInput = document.getElementById("phone");
+      const serviceInput = document.getElementById("service");
+      const priceTierInput = document.getElementById("priceTier");
+      const selectionTitle = document.getElementById("selectionTitle");
+      const serviceButtons = document.getElementById("serviceButtons");
+      const priceList = document.getElementById("priceList");
+      const serviceForm = document.getElementById("serviceForm");
+      const result = document.getElementById("result");
+
+      let currentPhone = "";
+      let selectedService = "";
+      let selectedTier = "";
+      let selectedPrice = 0;
+
+      function formatPrice(value) {
+        return `BWP ${value.toFixed(2)}`;
+      }
+
+      function buildPhoneCards() {
+        const names = Object.keys(phoneData);
+        phoneGrid.innerHTML = names.map((name) => `
+          <button type="button" class="phone-card" data-phone="${name}">
+            <div class="phone-picture">
+              <img
+                src="${phoneData[name].image}"
+                alt="${name}"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/320x220?text=${encodeURIComponent(name)}';"
+              >
+            </div>
+            <div class="phone-name">${name}</div>
+          </button>
+        `).join("");
+      }
+
+      function renderServiceButtons() {
+        serviceButtons.innerHTML = Object.keys(serviceBase).map((service) => `
+          <button type="button" data-service="${service}">${service}</button>
+        `).join("");
+      }
+
+      function renderPrices() {
+        const phoneFactor = phoneData[currentPhone].factor;
+        priceList.innerHTML = Object.keys(tierFactors).map((tier) => {
+          const price = serviceBase[selectedService] * phoneFactor * tierFactors[tier];
+          return `
+            <button type="button" class="price-option" data-tier="${tier}" data-price="${price}">
+              <strong>${tier}</strong><br>
+              <span>${formatPrice(price)}</span>
+            </button>
+          `;
+        }).join("");
+      }
+
+      phoneGrid.addEventListener("click", (event) => {
+        const card = event.target.closest(".phone-card");
+        if (!card) return;
+
+        currentPhone = card.dataset.phone;
+        phoneInput.value = currentPhone;
+        serviceInput.value = "";
+        priceTierInput.value = "";
+        selectedService = "";
+        selectedTier = "";
+        selectedPrice = 0;
+        selectionTitle.textContent = `${currentPhone} - Select a Service`;
+        renderServiceButtons();
+        priceList.innerHTML = "";
+      });
+
+      serviceButtons.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-service]");
+        if (!button) return;
+        selectedService = button.dataset.service;
+        [...serviceButtons.children].forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        selectedTier = "";
+        selectedPrice = 0;
+        serviceInput.value = selectedService;
+        priceTierInput.value = "";
+        renderPrices();
+      });
+
+      priceList.addEventListener("click", (event) => {
+        const option = event.target.closest(".price-option");
+        if (!option) return;
+        selectedTier = option.dataset.tier;
+        selectedPrice = Number(option.dataset.price);
+        [...priceList.children].forEach((item) => item.classList.remove("selected"));
+        option.classList.add("selected");
+        priceTierInput.value = `${selectedTier} - ${formatPrice(selectedPrice)}`;
+      });
+
+      serviceForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        result.textContent = `${phoneInput.value} booking received for ${serviceInput.value} (${priceTierInput.value}).`;
+      });
+
+      buildPhoneCards();
+    </script>
+</body>
+</html>
