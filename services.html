@@ -429,6 +429,16 @@
           <input id="customerName" type="text" placeholder="Enter your name" required>
         </div>
 
+        <div>
+          <label for="customerPhone">Phone Number</label>
+          <input id="customerPhone" type="tel" placeholder="e.g. 71 234 567" required>
+        </div>
+
+        <div>
+          <label for="customerEmail">Email Address</label>
+          <input id="customerEmail" type="email" placeholder="e.g. you@email.com" required>
+        </div>
+
         <button type="submit">Submit Request</button>
       </form>
 
@@ -511,6 +521,8 @@
       const estimatedPriceInput = document.getElementById("estimatedPrice");
       const customerTypeInput = document.getElementById("customerType");
       const customerNameInput = document.getElementById("customerName");
+      const customerPhoneInput = document.getElementById("customerPhone");
+      const customerEmailInput = document.getElementById("customerEmail");
       const selectionTitle = document.getElementById("selectionTitle");
       const customerTypeButtons = document.getElementById("customerTypeButtons");
       const studentIdWrap = document.getElementById("studentIdWrap");
@@ -717,6 +729,8 @@
         }
 
         const name = customerNameInput.value.trim();
+        const contactPhone = customerPhoneInput.value.trim();
+        const contactEmail = customerEmailInput.value.trim();
         const orderId = generateOrderId();
         const studentLine = selectedCustomerType === "Student"
           ? ` · Student ID: ${studentIdInput.value.trim()}`
@@ -724,7 +738,7 @@
 
         result.innerHTML = `
           <h3>Your order has been sent</h3>
-          <p>Thank you, <strong>${name}</strong>. Your repair request was submitted successfully. Our team will review it and contact you shortly.</p>
+          <p>Thank you, <strong>${name}</strong>. Your repair request was submitted successfully. We will contact you at <strong>${contactPhone}</strong> or <strong>${contactEmail}</strong>.</p>
           <p><span class="order-id">Order reference: ${orderId}</span></p>
           <p class="order-summary">
             <strong>${phoneInput.value}</strong> · ${serviceInput.value} · ${estimatedPriceInput.value} · ${selectedCustomerType}${studentLine}
