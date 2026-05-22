@@ -296,6 +296,45 @@
         margin-top: 4px;
       }
 
+      .student-id-wrap {
+        margin-top: 14px;
+      }
+
+      .student-id-wrap label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .student-id-wrap input {
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid var(--glass-border);
+        padding: 10px;
+        font-size: 14px;
+        background: rgba(0, 10, 25, 0.4);
+        color: var(--txt-main);
+      }
+
+      .student-id-wrap input::placeholder {
+        color: var(--txt-soft);
+      }
+
+      .student-id-wrap input:invalid:not(:placeholder-shown) {
+        border-color: #ff7b7b;
+      }
+
+      .student-id-wrap .field-error {
+        color: #ff9b9b;
+        font-size: 12px;
+        margin: 6px 0 0;
+        display: none;
+      }
+
+      .student-id-wrap .field-error.visible {
+        display: block;
+      }
+
       .price-display {
         border: 1px solid var(--accent);
         border-radius: 12px;
@@ -339,6 +378,18 @@
         <h2>Customer Category</h2>
         <p class="small">Students receive 15% off all repair prices.</p>
         <div id="customerTypeButtons" class="customer-type-buttons"></div>
+        <div id="studentIdWrap" class="student-id-wrap" hidden>
+          <label for="studentId">Student ID</label>
+          <input
+            id="studentId"
+            type="text"
+            placeholder="e.g. bida25-499"
+            pattern="[A-Za-z][A-Za-z0-9]*-[0-9]+"
+            title="Use your student ID format, e.g. bida25-499"
+            autocomplete="off"
+          >
+          <p class="small">Required for student discount. Format: letters and numbers, then a hyphen and digits (e.g. bida25-499).</p>
+        </div>
       </section>
 
       <section class="glass-card">
@@ -462,6 +513,14 @@
       const customerNameInput = document.getElementById("customerName");
       const selectionTitle = document.getElementById("selectionTitle");
       const customerTypeButtons = document.getElementById("customerTypeButtons");
+      const studentIdWrap = document.getElementById("studentIdWrap");
+      const studentIdInput = document.getElementById("studentId");
+      const studentIdError = document.createElement("p");
+      studentIdError.className = "field-error";
+      studentIdError.textContent = "Enter a valid student ID (e.g. bida25-499).";
+      studentIdWrap.appendChild(studentIdError);
+
+      const studentIdPattern = /^[A-Za-z][A-Za-z0-9]*-\d+$/;
       const serviceButtons = document.getElementById("serviceButtons");
       const priceDisplay = document.getElementById("priceDisplay");
       const serviceForm = document.getElementById("serviceForm");
@@ -512,10 +571,25 @@
         }).join("");
       }
 
+      function toggleStudentIdField() {
+        const isStudent = selectedCustomerType === "Student";
+        studentIdWrap.hidden = !isStudent;
+        studentIdInput.required = isStudent;
+        if (!isStudent) {
+          studentIdInput.value = "";
+          studentIdError.classList.remove("visible");
+          studentIdInput.setCustomValidity("");
+        }
+      }
+
+      function isValidStudentId(value) {
+        return studentIdPattern.test(value.trim());
+      }
+
       function renderCustomerTypeButtons() {
         const notes = {
           "Adult": "Regular shop rates",
-          "Student": "15% off all prices (student ID required)"
+          "Student": "15% off — student ID required below"
         };
         customerTypeButtons.innerHTML = Object.keys(customerTypeFactors).map((type) => `
           <button type="button" data-customer-type="${type}" class="${type === selectedCustomerType ? "active" : ""}">
@@ -524,6 +598,7 @@
           </button>
         `).join("");
         customerTypeInput.value = selectedCustomerType;
+        toggleStudentIdField();
       }
 
       function calculatePrice() {
@@ -557,9 +632,15 @@
         [...customerTypeButtons.children].forEach((item) => item.classList.remove("active"));
         button.classList.add("active");
         customerTypeInput.value = selectedCustomerType;
+        toggleStudentIdField();
         if (currentPhone && selectedService) {
           renderPrice();
         }
+      });
+
+      studentIdInput.addEventListener("input", () => {
+        studentIdError.classList.remove("visible");
+        studentIdInput.setCustomValidity("");
       });
 
       phoneGrid.addEventListener("click", (event) => {
@@ -608,21 +689,45 @@
         priceDisplay.hidden = true;
         priceDisplay.innerHTML = "";
         [...serviceButtons.children].forEach((item) => item.classList.remove("active"));
+        studentIdInput.value = "";
+        studentIdError.classList.remove("visible");
+        toggleStudentIdField();
         renderCustomerTypeButtons();
       }
 
       serviceForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
+        if (selectedCustomerType === "Student") {
+          const studentId = studentIdInput.value.trim();
+          if (!studentId) {
+            studentIdError.textContent = "Student ID is required for student bookings.";
+            studentIdError.classList.add("visible");
+            studentIdInput.focus();
+            return;
+          }
+          if (!isValidStudentId(studentId)) {
+            studentIdError.textContent = "Enter a valid student ID (e.g. bida25-499).";
+            studentIdError.classList.add("visible");
+            studentIdInput.setCustomValidity("Invalid student ID format.");
+            studentIdInput.reportValidity();
+            studentIdInput.focus();
+            return;
+          }
+        }
+
         const name = customerNameInput.value.trim();
         const orderId = generateOrderId();
+        const studentLine = selectedCustomerType === "Student"
+          ? ` · Student ID: ${studentIdInput.value.trim()}`
+          : "";
 
         result.innerHTML = `
           <h3>Your order has been sent</h3>
           <p>Thank you, <strong>${name}</strong>. Your repair request was submitted successfully. Our team will review it and contact you shortly.</p>
           <p><span class="order-id">Order reference: ${orderId}</span></p>
           <p class="order-summary">
-            <strong>${phoneInput.value}</strong> · ${serviceInput.value} · ${estimatedPriceInput.value} · ${selectedCustomerType}
+            <strong>${phoneInput.value}</strong> · ${serviceInput.value} · ${estimatedPriceInput.value} · ${selectedCustomerType}${studentLine}
           </p>
         `;
         result.classList.add("visible");
