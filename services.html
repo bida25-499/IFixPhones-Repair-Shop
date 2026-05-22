@@ -149,6 +149,12 @@
         font-size: 14px;
       }
 
+      .phone-from-price {
+        font-size: 12px;
+        color: var(--txt-soft);
+        margin-top: 4px;
+      }
+
       form {
         display: grid;
         gap: 12px;
@@ -190,10 +196,50 @@
         cursor: pointer;
       }
 
-      #result {
-        margin-top: 14px;
-        font-weight: 700;
+      .order-confirmation {
+        display: none;
+        margin-top: 16px;
+        padding: 18px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(68, 241, 255, 0.45);
+        background: rgba(68, 241, 255, 0.1);
+      }
+
+      .order-confirmation.visible {
+        display: block;
+      }
+
+      .order-confirmation h3 {
+        margin: 0 0 10px;
         color: var(--accent);
+        font-size: 1.2rem;
+      }
+
+      .order-confirmation p {
+        margin: 0 0 8px;
+        color: var(--txt-soft);
+        font-weight: 400;
+        line-height: 1.5;
+      }
+
+      .order-confirmation p:last-child {
+        margin-bottom: 0;
+      }
+
+      .order-confirmation strong {
+        color: var(--txt-main);
+      }
+
+      .order-confirmation .order-id {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .order-confirmation .order-summary {
+        font-size: 13px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--glass-border);
       }
 
       .service-buttons {
@@ -218,25 +264,51 @@
         color: var(--accent);
       }
 
-      .price-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      .customer-type-buttons {
+        display: flex;
+        flex-wrap: wrap;
         gap: 10px;
+        margin-bottom: 4px;
+      }
+
+      .customer-type-buttons button {
+        width: auto;
+        flex: 1;
+        min-width: 140px;
+        border: 1px solid var(--glass-border);
+        background: rgba(0, 10, 25, 0.35);
+        color: var(--txt-main);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .customer-type-buttons button.active {
+        background: rgba(109, 141, 255, 0.25);
+        border-color: var(--accent-2);
+        color: #c8d6ff;
+      }
+
+      .customer-type-buttons button .type-note {
+        display: block;
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--txt-soft);
+        margin-top: 4px;
+      }
+
+      .price-display {
+        border: 1px solid var(--accent);
+        border-radius: 12px;
+        padding: 14px 16px;
+        background: rgba(68, 241, 255, 0.12);
         margin-bottom: 12px;
       }
 
-      .price-option {
-        border: 1px solid var(--glass-border);
-        border-radius: 10px;
-        padding: 10px;
-        cursor: pointer;
-        background: rgba(0, 10, 25, 0.35);
-        color: var(--txt-main);
-      }
-
-      .price-option.selected {
-        border-color: var(--accent);
-        background: rgba(68, 241, 255, 0.16);
+      .price-display strong {
+        display: block;
+        font-size: 1.35rem;
+        color: var(--accent);
+        margin-top: 4px;
       }
 
       .small {
@@ -254,13 +326,20 @@
           <a href="services.html">Services</a>
           <a href="about.html">About Us</a>
           <a href="contact.html">Contact Us</a>
+          <a href="feedback.html">Feedback</a>
         </nav>
       </div>
     </header>
 
     <main class="container">
       <h1>Services Booking</h1>
-      <p>Click a phone picture, then choose service and one of three prices below.</p>
+      <p>Choose whether you are an adult or student, then pick a phone and service to see your price.</p>
+
+      <section class="glass-card">
+        <h2>Customer Category</h2>
+        <p class="small">Students receive 15% off all repair prices.</p>
+        <div id="customerTypeButtons" class="customer-type-buttons"></div>
+      </section>
 
       <section class="glass-card">
         <section class="phone-grid" id="phoneGrid"></section>
@@ -268,9 +347,9 @@
 
       <section class="glass-card inline-selection">
         <h2 id="selectionTitle">Select a phone to continue</h2>
-        <p class="small">Your service and price choices appear right here.</p>
+        <p class="small">Your service and device-specific price appear here after you choose both.</p>
         <div id="serviceButtons" class="service-buttons"></div>
-        <div id="priceList" class="price-list"></div>
+        <div id="priceDisplay" class="price-display" hidden></div>
       </section>
 
       <form id="serviceForm" class="glass-card">
@@ -285,8 +364,13 @@
         </div>
 
         <div>
-          <label for="priceTier">Selected Price Option</label>
-          <input id="priceTier" readonly required placeholder="Select price above">
+          <label for="estimatedPrice">Estimated Price</label>
+          <input id="estimatedPrice" readonly required placeholder="Select a phone and service above">
+        </div>
+
+        <div>
+          <label for="customerType">Customer Category</label>
+          <input id="customerType" readonly required placeholder="Select adult or student above">
         </div>
 
         <div>
@@ -297,67 +381,104 @@
         <button type="submit">Submit Request</button>
       </form>
 
-      <div id="result"></div>
+      <div id="result" class="order-confirmation" role="status" aria-live="polite"></div>
     </main>
 
     <script>
+      const services = [
+        "Screen Replacement",
+        "Battery Replacement",
+        "Charging Port Repair",
+        "Software Fix"
+      ];
+
       const phoneData = {
         "iPhone": {
-          factor: 1.25,
-          image: "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-15-pro-max-1.jpg"
+          image: "https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-15-pro-max-1.jpg",
+          prices: {
+            "Screen Replacement": 565,
+            "Battery Replacement": 400,
+            "Charging Port Repair": 350,
+            "Software Fix": 275
+          }
         },
         "Samsung": {
-          factor: 1.15,
-          image: "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s24-ultra-5g-sm-s928-0.jpg"
+          image: "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s24-ultra-5g-sm-s928-0.jpg",
+          prices: {
+            "Screen Replacement": 520,
+            "Battery Replacement": 370,
+            "Charging Port Repair": 325,
+            "Software Fix": 255
+          }
         },
         "Huawei": {
-          factor: 1.1,
-          image: "https://fdn2.gsmarena.com/vv/pics/huawei/huawei-p60-pro-0.jpg"
+          image: "https://fdn2.gsmarena.com/vv/pics/huawei/huawei-p60-pro-0.jpg",
+          prices: {
+            "Screen Replacement": 495,
+            "Battery Replacement": 355,
+            "Charging Port Repair": 310,
+            "Software Fix": 245
+          }
         },
         "Tecno": {
-          factor: 1.0,
-          image: "https://fdn2.gsmarena.com/vv/pics/tecno/tecno-phantom-v-fold-0.jpg"
+          image: "https://fdn2.gsmarena.com/vv/pics/tecno/tecno-phantom-v-fold-0.jpg",
+          prices: {
+            "Screen Replacement": 450,
+            "Battery Replacement": 320,
+            "Charging Port Repair": 280,
+            "Software Fix": 220
+          }
         },
         "Google Pixel": {
-          factor: 1.2,
-          image: "https://fdn2.gsmarena.com/vv/pics/google/google-pixel-8-pro-0.jpg"
+          image: "https://fdn2.gsmarena.com/vv/pics/google/google-pixel-8-pro-0.jpg",
+          prices: {
+            "Screen Replacement": 540,
+            "Battery Replacement": 385,
+            "Charging Port Repair": 335,
+            "Software Fix": 265
+          }
         },
         "Xiaomi": {
-          factor: 1.05,
-          image: "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-14-ultra-1.jpg"
+          image: "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-14-ultra-1.jpg",
+          prices: {
+            "Screen Replacement": 475,
+            "Battery Replacement": 340,
+            "Charging Port Repair": 295,
+            "Software Fix": 235
+          }
         }
       };
 
-      const serviceBase = {
-        "Screen Replacement": 450,
-        "Battery Replacement": 320,
-        "Charging Port Repair": 280,
-        "Software Fix": 220
-      };
-
-      const tierFactors = {
-        "Budget": 1,
-        "Standard": 1.25,
-        "Premium": 1.5
+      const customerTypeFactors = {
+        "Adult": 1,
+        "Student": 0.85
       };
 
       const phoneGrid = document.getElementById("phoneGrid");
       const phoneInput = document.getElementById("phone");
       const serviceInput = document.getElementById("service");
-      const priceTierInput = document.getElementById("priceTier");
+      const estimatedPriceInput = document.getElementById("estimatedPrice");
+      const customerTypeInput = document.getElementById("customerType");
+      const customerNameInput = document.getElementById("customerName");
       const selectionTitle = document.getElementById("selectionTitle");
+      const customerTypeButtons = document.getElementById("customerTypeButtons");
       const serviceButtons = document.getElementById("serviceButtons");
-      const priceList = document.getElementById("priceList");
+      const priceDisplay = document.getElementById("priceDisplay");
       const serviceForm = document.getElementById("serviceForm");
       const result = document.getElementById("result");
 
       let currentPhone = "";
       let selectedService = "";
-      let selectedTier = "";
       let selectedPrice = 0;
+      let selectedCustomerType = "Adult";
 
       function formatPrice(value) {
         return `BWP ${value.toFixed(2)}`;
+      }
+
+      function getLowestPrice(phoneName) {
+        const amounts = Object.values(phoneData[phoneName].prices);
+        return Math.min(...amounts);
       }
 
       function buildPhoneCards() {
@@ -373,28 +494,73 @@
               >
             </div>
             <div class="phone-name">${name}</div>
+            <div class="phone-from-price">From ${formatPrice(getLowestPrice(name))}</div>
           </button>
         `).join("");
       }
 
       function renderServiceButtons() {
-        serviceButtons.innerHTML = Object.keys(serviceBase).map((service) => `
-          <button type="button" data-service="${service}">${service}</button>
-        `).join("");
-      }
-
-      function renderPrices() {
-        const phoneFactor = phoneData[currentPhone].factor;
-        priceList.innerHTML = Object.keys(tierFactors).map((tier) => {
-          const price = serviceBase[selectedService] * phoneFactor * tierFactors[tier];
+        if (!currentPhone) return;
+        serviceButtons.innerHTML = services.map((service) => {
+          const price = phoneData[currentPhone].prices[service];
           return `
-            <button type="button" class="price-option" data-tier="${tier}" data-price="${price}">
-              <strong>${tier}</strong><br>
-              <span>${formatPrice(price)}</span>
+            <button type="button" data-service="${service}">
+              ${service}<br>
+              <span class="small">${formatPrice(price)}</span>
             </button>
           `;
         }).join("");
       }
+
+      function renderCustomerTypeButtons() {
+        const notes = {
+          "Adult": "Regular shop rates",
+          "Student": "15% off all prices (student ID required)"
+        };
+        customerTypeButtons.innerHTML = Object.keys(customerTypeFactors).map((type) => `
+          <button type="button" data-customer-type="${type}" class="${type === selectedCustomerType ? "active" : ""}">
+            ${type}
+            <span class="type-note">${notes[type]}</span>
+          </button>
+        `).join("");
+        customerTypeInput.value = selectedCustomerType;
+      }
+
+      function calculatePrice() {
+        const basePrice = phoneData[currentPhone].prices[selectedService];
+        const customerFactor = customerTypeFactors[selectedCustomerType];
+        return basePrice * customerFactor;
+      }
+
+      function renderPrice() {
+        if (!currentPhone || !selectedService) {
+          priceDisplay.hidden = true;
+          priceDisplay.innerHTML = "";
+          selectedPrice = 0;
+          estimatedPriceInput.value = "";
+          return;
+        }
+        selectedPrice = calculatePrice();
+        const formatted = formatPrice(selectedPrice);
+        priceDisplay.hidden = false;
+        priceDisplay.innerHTML = `
+          <span class="small">${currentPhone} · ${selectedService}</span>
+          <strong>${formatted}</strong>
+        `;
+        estimatedPriceInput.value = formatted;
+      }
+
+      customerTypeButtons.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-customer-type]");
+        if (!button) return;
+        selectedCustomerType = button.dataset.customerType;
+        [...customerTypeButtons.children].forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        customerTypeInput.value = selectedCustomerType;
+        if (currentPhone && selectedService) {
+          renderPrice();
+        }
+      });
 
       phoneGrid.addEventListener("click", (event) => {
         const card = event.target.closest(".phone-card");
@@ -403,13 +569,13 @@
         currentPhone = card.dataset.phone;
         phoneInput.value = currentPhone;
         serviceInput.value = "";
-        priceTierInput.value = "";
+        estimatedPriceInput.value = "";
         selectedService = "";
-        selectedTier = "";
         selectedPrice = 0;
         selectionTitle.textContent = `${currentPhone} - Select a Service`;
         renderServiceButtons();
-        priceList.innerHTML = "";
+        priceDisplay.hidden = true;
+        priceDisplay.innerHTML = "";
       });
 
       serviceButtons.addEventListener("click", (event) => {
@@ -418,28 +584,53 @@
         selectedService = button.dataset.service;
         [...serviceButtons.children].forEach((item) => item.classList.remove("active"));
         button.classList.add("active");
-        selectedTier = "";
-        selectedPrice = 0;
         serviceInput.value = selectedService;
-        priceTierInput.value = "";
-        renderPrices();
+        renderPrice();
       });
 
-      priceList.addEventListener("click", (event) => {
-        const option = event.target.closest(".price-option");
-        if (!option) return;
-        selectedTier = option.dataset.tier;
-        selectedPrice = Number(option.dataset.price);
-        [...priceList.children].forEach((item) => item.classList.remove("selected"));
-        option.classList.add("selected");
-        priceTierInput.value = `${selectedTier} - ${formatPrice(selectedPrice)}`;
-      });
+      function generateOrderId() {
+        const code = Math.floor(100000 + Math.random() * 900000);
+        return `KRS-${code}`;
+      }
+
+      function resetBookingForm() {
+        currentPhone = "";
+        selectedService = "";
+        selectedPrice = 0;
+        selectedCustomerType = "Adult";
+        serviceForm.reset();
+        phoneInput.value = "";
+        serviceInput.value = "";
+        estimatedPriceInput.value = "";
+        customerTypeInput.value = "Adult";
+        selectionTitle.textContent = "Select a phone to continue";
+        serviceButtons.innerHTML = "";
+        priceDisplay.hidden = true;
+        priceDisplay.innerHTML = "";
+        [...serviceButtons.children].forEach((item) => item.classList.remove("active"));
+        renderCustomerTypeButtons();
+      }
 
       serviceForm.addEventListener("submit", (event) => {
         event.preventDefault();
-        result.textContent = `${phoneInput.value} booking received for ${serviceInput.value} (${priceTierInput.value}).`;
+
+        const name = customerNameInput.value.trim();
+        const orderId = generateOrderId();
+
+        result.innerHTML = `
+          <h3>Your order has been sent</h3>
+          <p>Thank you, <strong>${name}</strong>. Your repair request was submitted successfully. Our team will review it and contact you shortly.</p>
+          <p><span class="order-id">Order reference: ${orderId}</span></p>
+          <p class="order-summary">
+            <strong>${phoneInput.value}</strong> · ${serviceInput.value} · ${estimatedPriceInput.value} · ${selectedCustomerType}
+          </p>
+        `;
+        result.classList.add("visible");
+        result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        resetBookingForm();
       });
 
+      renderCustomerTypeButtons();
       buildPhoneCards();
     </script>
 </body>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Kitso's Phone Repair Shop</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(rgba(7, 20, 36, 0.72), rgba(7, 20, 36, 0.72)),
+          url("https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1400&q=80");
+        background-size: cover;
+        background-position: center;
+      }
+
+      .container { width: min(1080px, 92%); margin: 0 auto; }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        backdrop-filter: blur(9px);
+        background: rgba(2, 10, 22, 0.7);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .header-wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 0;
+      }
+
+      .site-title {
+        margin: 0;
+        font-size: clamp(21px, 3vw, 31px);
+        color: #eaf4ff;
+      }
+
+      .navbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .navbar a {
+        color: #eaf4ff;
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .navbar a:hover,
+      .navbar a.active {
+        background: linear-gradient(120deg, #6d8dff, #3fcbff);
+        border-color: transparent;
+      }
+
+      .feedback-wrap {
+        display: flex;
+        justify-content: center;
+        padding: 34px 14px 48px;
+      }
+
+      .feedback-card {
+        width: min(520px, 100%);
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        color: #10233a;
+      }
+
+      .intro {
+        margin: 0 0 18px;
+        color: #38506c;
+      }
+
+      label {
+        display: block;
+        font-weight: 700;
+        color: #10233a;
+        margin-bottom: 6px;
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        width: 100%;
+        border: 1px solid #c9d6e3;
+        border-radius: 8px;
+        padding: 10px 11px;
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .rating-group {
+        margin-bottom: 14px;
+      }
+
+      .rating-group label {
+        margin-bottom: 8px;
+      }
+
+      .star-rating {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 4px;
+      }
+
+      .star-rating button {
+        width: auto;
+        margin: 0;
+        padding: 6px 10px;
+        font-size: 22px;
+        line-height: 1;
+        background: #eef4fa;
+        border: 1px solid #c9d6e3;
+        cursor: pointer;
+        color: #9eb0c4;
+        transition: color 0.15s ease, border-color 0.15s ease;
+      }
+
+      .star-rating button:hover,
+      .star-rating button.active {
+        color: #f5b301;
+        border-color: #f5b301;
+        background: #fff9e6;
+      }
+
+      .rating-hint {
+        font-size: 13px;
+        color: #5a7089;
+        margin: 0 0 12px;
+      }
+
+      .recommend-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .recommend-options label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 400;
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .recommend-options input {
+        width: auto;
+        margin: 0;
+      }
+
+      button[type="submit"] {
+        background: #0a66c2;
+        color: #fff;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 0;
+      }
+
+      button[type="submit"]:hover {
+        background: #074f96;
+      }
+
+      #feedbackResult {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        display: none;
+      }
+
+      #feedbackResult.success {
+        display: block;
+        background: #e8f7ee;
+        color: #1b6b3a;
+        border: 1px solid #9ed4b0;
+      }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+      <div class="container header-wrap" id="maincontainer">
+        <h1 class="site-title">Kitso's Repair Shop</h1>
+        <nav class="navbar" id="navbar">
+          <a href="index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="about.html">About Us</a>
+          <a href="contact.html">Contact Us</a>
+          <a href="feedback.html" class="active">Feedback</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="feedback-wrap">
+      <main class="feedback-card">
+        <h1>Customer Feedback</h1>
+        <p class="intro">Tell us about your repair experience. Your feedback helps us improve our service.</p>
+
+        <form id="feedbackForm">
+          <label for="customerName">Your Name</label>
+          <input id="customerName" type="text" placeholder="Enter your name" required>
+
+          <label for="phoneNumber">Phone Number (optional)</label>
+          <input id="phoneNumber" type="tel" placeholder="e.g. 71 234 567">
+
+          <label for="visitType">Visit Type</label>
+          <select id="visitType" required>
+            <option value="">-- Choose one --</option>
+            <option>Repair completed</option>
+            <option>Repair in progress</option>
+            <option>General enquiry only</option>
+          </select>
+
+          <label for="serviceUsed">Service Used</label>
+          <select id="serviceUsed">
+            <option value="">-- Not applicable --</option>
+            <option>Screen Replacement</option>
+            <option>Battery Replacement</option>
+            <option>Charging Port Repair</option>
+            <option>Software Fix</option>
+            <option>Other</option>
+          </select>
+
+          <div class="rating-group">
+            <label>Overall Rating</label>
+            <div class="star-rating" id="starRating" role="group" aria-label="Overall rating">
+              <button type="button" data-rating="1" aria-label="1 star">★</button>
+              <button type="button" data-rating="2" aria-label="2 stars">★</button>
+              <button type="button" data-rating="3" aria-label="3 stars">★</button>
+              <button type="button" data-rating="4" aria-label="4 stars">★</button>
+              <button type="button" data-rating="5" aria-label="5 stars">★</button>
+            </div>
+            <p class="rating-hint" id="ratingHint">Select a rating from 1 to 5 stars.</p>
+            <input type="hidden" id="rating" required>
+          </div>
+
+          <label>Would you recommend us?</label>
+          <div class="recommend-options">
+            <label><input type="radio" name="recommend" value="Yes" required> Yes</label>
+            <label><input type="radio" name="recommend" value="No"> No</label>
+            <label><input type="radio" name="recommend" value="Maybe"> Maybe</label>
+          </div>
+
+          <label for="comments">Your Feedback</label>
+          <textarea id="comments" placeholder="What went well? What could we do better?" required></textarea>
+
+          <button type="submit">Submit Feedback</button>
+        </form>
+
+        <div id="feedbackResult" role="status"></div>
+      </main>
+    </div>
+
+    <script>
+      const feedbackForm = document.getElementById("feedbackForm");
+      const ratingInput = document.getElementById("rating");
+      const ratingHint = document.getElementById("ratingHint");
+      const starRating = document.getElementById("starRating");
+      const feedbackResult = document.getElementById("feedbackResult");
+
+      const ratingLabels = {
+        1: "Poor — we will work to improve.",
+        2: "Below average — thank you for being honest.",
+        3: "Average — we appreciate your input.",
+        4: "Good — glad you had a positive visit.",
+        5: "Excellent — thank you for the great review!"
+      };
+
+      function setRating(value) {
+        ratingInput.value = String(value);
+        [...starRating.children].forEach((star) => {
+          const active = Number(star.dataset.rating) <= value;
+          star.classList.toggle("active", active);
+        });
+        ratingHint.textContent = ratingLabels[value];
+      }
+
+      starRating.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-rating]");
+        if (!button) return;
+        setRating(Number(button.dataset.rating));
+      });
+
+      feedbackForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        if (!ratingInput.value) {
+          ratingHint.textContent = "Please select a star rating before submitting.";
+          ratingHint.style.color = "#b42318";
+          return;
+        }
+
+        const name = document.getElementById("customerName").value.trim();
+        const recommend = feedbackForm.querySelector('input[name="recommend"]:checked').value;
+
+        feedbackResult.className = "success";
+        feedbackResult.textContent = `Thank you, ${name}! Your ${ratingInput.value}-star feedback has been received. We appreciate that you would ${recommend.toLowerCase()} recommend Kitso's Repair Shop.`;
+        feedbackForm.reset();
+        ratingInput.value = "";
+        [...starRating.children].forEach((star) => star.classList.remove("active"));
+        ratingHint.textContent = "Select a rating from 1 to 5 stars.";
+        ratingHint.style.color = "";
+      });
+    </script>
+</body>
+</html>
